@@ -9,7 +9,8 @@ export interface UserProfile {
   experience: string;
   education: string;
   skills: string;
-  baseCvSource: string; // New field for the user's reference LaTeX template
+  baseCvSource: string;
+  baseClSource: string; // New field for LaTeX cover letter template
 }
 
 export interface JobApplication {

@@ -65,7 +65,7 @@ export const generateLatexCV = async (profile: UserProfile, jobRole: string, com
     model: 'gemini-3-flash-preview',
     contents: prompt,
     config: {
-      temperature: 0.5, // Slightly lower temperature for better structural adherence
+      temperature: 0.5,
     }
   });
 
@@ -73,17 +73,26 @@ export const generateLatexCV = async (profile: UserProfile, jobRole: string, com
 };
 
 export const generateCoverLetter = async (profile: UserProfile, jobRole: string, companyName: string, jd: string) => {
+  const baseTemplatePrompt = profile.baseClSource
+    ? `Use the following LaTeX code as the BASE TEMPLATE for the cover letter. Keep its structure and formatting.
+       REPLACE the placeholder text with a professionally written cover letter for the role.
+       
+       BASE TEMPLATE:
+       ${profile.baseClSource}`
+    : `Write a professional and compelling cover letter. Output as plain text unless you feel LaTeX is requested. 
+       If no template is provided, stick to professional formatting.`;
+
   const prompt = `
-    Write a professional and compelling cover letter for ${profile.fullName} applying for ${jobRole} at ${companyName}.
+    Write a compelling cover letter for ${profile.fullName} applying for ${jobRole} at ${companyName}.
     Tailor it specifically to the job description below.
-    Format:
-    [Candidate Info]
-    [Date]
-    [Hiring Manager at Company]
-    [Body]
     
+    ${baseTemplatePrompt}
+    
+    Candidate Info: ${profile.fullName}, ${profile.location}, ${profile.email}, ${profile.phone}
     Job Description:
     ${jd}
+
+    IMPORTANT: If a LaTeX template was provided, you MUST output valid LaTeX code preserving that design.
   `;
 
   const response = await ai.models.generateContent({
@@ -94,5 +103,5 @@ export const generateCoverLetter = async (profile: UserProfile, jobRole: string,
     }
   });
 
-  return response.text.trim();
+  return response.text.replace(/```latex/g, '').replace(/```/g, '').trim();
 };

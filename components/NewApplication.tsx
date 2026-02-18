@@ -125,20 +125,22 @@ const NewApplication: React.FC<Props> = ({ profile, onComplete }) => {
     { key: 'REVIEW', label: 'Preview' },
   ];
 
+  const isClLatex = appData.coverLetter?.includes('\\documentclass');
+
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-      <div className="bg-slate-50 border-b border-slate-200 p-6">
+    <div className="max-w-6xl mx-auto bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-800">
+      <div className="bg-slate-800 border-b border-slate-700 p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-slate-800">Application Builder</h2>
+          <h2 className="text-xl font-bold text-slate-100">Application Builder</h2>
           <div className="flex gap-2">
              {stepsInfo.map((s, idx) => (
                 <div key={s.key} className="flex items-center">
-                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                     stepsInfo.findIndex(item => item.key === step) >= idx ? 'bg-indigo-600 text-white' : 'bg-slate-200 text-slate-500'
+                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                     stepsInfo.findIndex(item => item.key === step) >= idx ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/20' : 'bg-slate-700 text-slate-500'
                    }`}>
                      {idx + 1}
                    </div>
-                   {idx < stepsInfo.length - 1 && <div className="w-4 h-0.5 bg-slate-200 mx-1"></div>}
+                   {idx < stepsInfo.length - 1 && <div className={`w-4 h-0.5 mx-1 transition-colors ${stepsInfo.findIndex(item => item.key === step) > idx ? 'bg-indigo-500' : 'bg-slate-700'}`}></div>}
                 </div>
              ))}
           </div>
@@ -147,40 +149,43 @@ const NewApplication: React.FC<Props> = ({ profile, onComplete }) => {
 
       <div className="p-8">
         {step === 'JD_INPUT' && (
-          <div className="max-w-2xl mx-auto space-y-6">
-            <h3 className="text-2xl font-bold text-slate-900 text-center">Let's start with the JD</h3>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Job URL</label>
-              <input type="url" value={jobUrl} onChange={(e) => setJobUrl(e.target.value)} placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none" />
+          <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in duration-500">
+            <h3 className="text-2xl font-bold text-slate-100 text-center">Analyze Job Description</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Job URL (Optional)</label>
+                <input type="url" value={jobUrl} onChange={(e) => setJobUrl(e.target.value)} placeholder="https://..." className="w-full bg-slate-800 border border-slate-700 px-4 py-3 rounded-xl text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-400 mb-2">Description Paste *</label>
+                <textarea rows={10} value={jd} onChange={(e) => setJd(e.target.value)} placeholder="Paste job requirements, responsibilities, etc..." className="w-full bg-slate-800 border border-slate-700 px-4 py-3 rounded-xl text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition-all" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">Description Paste *</label>
-              <textarea rows={10} value={jd} onChange={(e) => setJd(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none resize-none" />
-            </div>
-            <button onClick={handleProcessJD} disabled={loading || !jd} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:bg-indigo-700">
-              {loading ? <i className="fas fa-spinner fa-spin"></i> : "Analyze with AI"}
+            <button onClick={handleProcessJD} disabled={loading || !jd} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/40 flex items-center justify-center gap-2 transition-all hover:bg-indigo-500 disabled:opacity-50">
+              {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-bolt"></i>}
+              Analyze with Gemini AI
             </button>
           </div>
         )}
 
         {step === 'EXTRACTION' && (
-          <div className="max-w-2xl mx-auto space-y-6">
-             <h3 className="text-xl font-bold text-slate-800 border-b pb-2">Confirm Extracted Info</h3>
+          <div className="max-w-2xl mx-auto space-y-6 animate-in slide-in-from-right duration-300">
+             <h3 className="text-xl font-bold text-slate-100 border-b border-slate-800 pb-2">Confirm Extraction</h3>
              <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 md:col-span-1">
                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Company</label>
-                   <input type="text" value={appData.companyName} onChange={(e) => setAppData({...appData, companyName: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+                   <input type="text" value={appData.companyName} onChange={(e) => setAppData({...appData, companyName: e.target.value})} className="w-full bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-slate-100 outline-none focus:border-indigo-500" />
                 </div>
                 <div className="col-span-2 md:col-span-1">
                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Role</label>
-                   <input type="text" value={appData.jobRole} onChange={(e) => setAppData({...appData, jobRole: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+                   <input type="text" value={appData.jobRole} onChange={(e) => setAppData({...appData, jobRole: e.target.value})} className="w-full bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-slate-100 outline-none focus:border-indigo-500" />
                 </div>
                 <div className="col-span-2">
                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Deadline</label>
-                   <input type="text" value={appData.deadline} onChange={(e) => setAppData({...appData, deadline: e.target.value})} className="w-full px-4 py-2 border rounded-lg" />
+                   <input type="text" value={appData.deadline} onChange={(e) => setAppData({...appData, deadline: e.target.value})} className="w-full bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-slate-100 outline-none focus:border-indigo-500" />
                 </div>
              </div>
-             <button onClick={generateCV} disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg">
+             <button onClick={generateCV} disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all hover:bg-indigo-500">
                 {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : null}
                 Next: Tailor LaTeX CV
              </button>
@@ -188,148 +193,159 @@ const NewApplication: React.FC<Props> = ({ profile, onComplete }) => {
         )}
 
         {step === 'CV_GEN' && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in slide-in-from-right duration-300">
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="text-xl font-bold text-slate-800">LaTeX Source</h3>
-                <p className="text-sm text-slate-500">Edit or copy this into TeXworks later.</p>
+                <h3 className="text-xl font-bold text-slate-100">LaTeX Source</h3>
+                <p className="text-sm text-slate-400">Customized based on your template & job description.</p>
               </div>
-              <button onClick={() => handleCopy(appData.latexCv!, 'cv')} className="bg-slate-100 px-4 py-2 rounded-lg text-sm font-bold text-indigo-600">
+              <button onClick={() => handleCopy(appData.latexCv!, 'cv')} className="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-sm font-bold text-indigo-400 hover:bg-slate-700 transition-colors">
                  {copied === 'cv' ? 'Copied!' : 'Copy Source'}
               </button>
             </div>
-            <textarea rows={14} value={appData.latexCv} onChange={(e) => setAppData({...appData, latexCv: e.target.value})} className="w-full font-mono text-sm px-4 py-3 rounded-xl border border-slate-200 bg-slate-900 text-indigo-200 outline-none" />
+            <textarea rows={14} value={appData.latexCv} onChange={(e) => setAppData({...appData, latexCv: e.target.value})} className="w-full font-mono text-sm px-4 py-3 rounded-xl border border-slate-800 bg-slate-950 text-indigo-300 outline-none focus:border-indigo-500/50 transition-all shadow-inner" />
             <div className="flex gap-4">
-               <button onClick={() => setStep('EXTRACTION')} className="flex-1 font-bold py-4 bg-slate-100 rounded-xl">Back</button>
-               <button onClick={generateCL} disabled={loading} className="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg">Next: Generate Cover Letter</button>
+               <button onClick={() => setStep('EXTRACTION')} className="flex-1 font-bold py-4 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors">Back</button>
+               <button onClick={generateCL} disabled={loading} className="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-indigo-500 transition-colors">Next: Generate Cover Letter</button>
             </div>
           </div>
         )}
 
         {step === 'CL_GEN' && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in slide-in-from-right duration-300">
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-bold text-slate-800">Cover Letter Text</h3>
-              <button onClick={() => handleCopy(appData.coverLetter!, 'cl')} className="bg-slate-100 px-4 py-2 rounded-lg text-sm font-bold text-indigo-600">
+              <h3 className="text-xl font-bold text-slate-100">Cover Letter Draft</h3>
+              <button onClick={() => handleCopy(appData.coverLetter!, 'cl')} className="bg-slate-800 border border-slate-700 px-4 py-2 rounded-lg text-sm font-bold text-indigo-400 hover:bg-slate-700 transition-colors">
                  {copied === 'cl' ? 'Copied!' : 'Copy Text'}
               </button>
             </div>
-            <textarea rows={14} value={appData.coverLetter} onChange={(e) => setAppData({...appData, coverLetter: e.target.value})} className="w-full px-4 py-3 rounded-xl border border-slate-200 text-slate-700 outline-none leading-relaxed" />
+            <textarea rows={14} value={appData.coverLetter} onChange={(e) => setAppData({...appData, coverLetter: e.target.value})} className={`w-full bg-slate-800 border border-slate-700 px-4 py-3 rounded-xl text-slate-200 outline-none leading-relaxed focus:border-indigo-500 transition-all ${isClLatex ? 'font-mono text-amber-100' : ''}`} />
             <div className="flex gap-4">
-               <button onClick={() => setStep('CV_GEN')} className="flex-1 font-bold py-4 bg-slate-100 rounded-xl">Back</button>
-               <button onClick={() => setStep('REVIEW')} className="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg">Final Preview</button>
+               <button onClick={() => setStep('CV_GEN')} className="flex-1 font-bold py-4 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors">Back</button>
+               <button onClick={() => setStep('REVIEW')} className="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-indigo-500 transition-colors">Final Preview</button>
             </div>
           </div>
         )}
 
         {step === 'REVIEW' && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-500">
-            <div className="flex justify-between items-end border-b pb-4">
+            <div className="flex justify-between items-end border-b border-slate-800 pb-4">
               <div>
-                <h3 className="text-2xl font-bold text-slate-900">Document Review</h3>
-                <p className="text-slate-500">Preview exactly how the content will read.</p>
+                <h3 className="text-2xl font-bold text-slate-100">Final Document Review</h3>
+                <p className="text-slate-400">Double check everything before saving.</p>
               </div>
-              <div className="flex bg-slate-100 p-1 rounded-xl">
-                 <button onClick={() => setPreviewTab('cl')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${previewTab === 'cl' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>Cover Letter</button>
-                 <button onClick={() => setPreviewTab('cv')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${previewTab === 'cv' ? 'bg-white shadow-sm text-indigo-600' : 'text-slate-500 hover:text-slate-700'}`}>CV Highlights</button>
+              <div className="flex bg-slate-800 p-1 rounded-xl border border-slate-700">
+                 <button onClick={() => setPreviewTab('cl')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${previewTab === 'cl' ? 'bg-slate-700 shadow-sm text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}>Cover Letter</button>
+                 <button onClick={() => setPreviewTab('cv')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${previewTab === 'cv' ? 'bg-slate-700 shadow-sm text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}>CV Highlights</button>
               </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
-              {/* Main Preview Pane */}
-              <div className="flex-grow bg-slate-200 p-8 rounded-2xl flex justify-center overflow-auto max-h-[700px]">
-                <div className="bg-white w-full max-w-[210mm] shadow-2xl p-12 min-h-[297mm] text-slate-800 font-serif leading-relaxed">
+              <div className="flex-grow bg-slate-950 p-4 sm:p-8 rounded-2xl flex justify-center overflow-auto max-h-[700px] border border-slate-800 shadow-inner">
+                <div className="bg-white w-full max-w-[210mm] shadow-2xl p-8 sm:p-12 min-h-[297mm] text-slate-900 font-serif leading-relaxed">
                   {previewTab === 'cl' ? (
-                    <div className="whitespace-pre-line text-sm">
-                      <div className="text-right mb-8 font-sans">
-                        <p className="font-bold">{profile.fullName}</p>
-                        <p>{profile.location}</p>
-                        <p>{profile.email} | {profile.phone}</p>
-                        <p>{new Date().toLocaleDateString()}</p>
-                      </div>
-                      <div className="mb-8 font-sans">
-                        <p>Hiring Manager</p>
-                        <p className="font-bold">{appData.companyName}</p>
-                      </div>
-                      <p className="mb-4">Dear Hiring Manager,</p>
-                      <div className="text-justify">{appData.coverLetter}</div>
-                      <div className="mt-12 font-sans">
-                        <p>Sincerely,</p>
-                        <p className="mt-4 font-bold text-lg">{profile.fullName}</p>
-                      </div>
+                    <div className="whitespace-pre-line text-[13px] sm:text-sm">
+                      {isClLatex ? (
+                        <div className="font-mono text-xs text-slate-600 p-4 bg-slate-50 rounded border border-dashed border-slate-200">
+                          <p className="mb-2 font-bold uppercase text-[10px] tracking-widest text-slate-400">LaTeX Template Detected</p>
+                          {appData.coverLetter?.substring(0, 1000)}...
+                          <p className="mt-4 text-indigo-600 font-bold">Previewing full LaTeX compilation is not possible in-browser. Please compile in TeXworks.</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="text-right mb-8 font-sans">
+                            <p className="font-bold text-slate-900">{profile.fullName}</p>
+                            <p className="text-slate-600">{profile.location}</p>
+                            <p className="text-slate-600">{profile.email} | {profile.phone}</p>
+                            <p className="text-slate-500 mt-2">{new Date().toLocaleDateString()}</p>
+                          </div>
+                          <div className="mb-8 font-sans">
+                            <p className="text-slate-600">Hiring Manager</p>
+                            <p className="font-bold text-slate-900">{appData.companyName}</p>
+                          </div>
+                          <p className="mb-4">Dear Hiring Manager,</p>
+                          <div className="text-justify text-slate-800">{appData.coverLetter}</div>
+                          <div className="mt-12 font-sans">
+                            <p>Sincerely,</p>
+                            <p className="mt-4 font-bold text-lg text-slate-900">{profile.fullName}</p>
+                          </div>
+                        </>
+                      )}
                     </div>
                   ) : (
                     <div className="font-sans">
                        <div className="text-center border-b-2 border-slate-900 pb-4 mb-6">
-                          <h1 className="text-3xl font-bold tracking-tight">{profile.fullName}</h1>
+                          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{profile.fullName}</h1>
                           <p className="text-sm text-slate-600 mt-1">{profile.email} • {profile.phone} • {profile.location}</p>
                        </div>
                        
                        <section className="mb-6">
-                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide">Professional Summary</h2>
-                          <p className="text-sm text-slate-700">The LaTeX export includes a summary tailored specifically for <strong>{appData.jobRole}</strong> at <strong>{appData.companyName}</strong> based on your profile.</p>
+                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide text-slate-900">Summary Preview</h2>
+                          <p className="text-sm text-slate-700 italic">The generated LaTeX includes a tailored professional summary for {appData.jobRole}.</p>
                        </section>
 
                        <section className="mb-6">
-                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide">Experience Highlights</h2>
+                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide text-slate-900">Experience Base</h2>
                           <div className="space-y-4">
-                             <p className="text-xs italic text-slate-500">Previewing extraction from your profile...</p>
-                             <div className="text-sm text-slate-800 bg-slate-50 p-4 rounded border border-dashed border-slate-300">
-                                {profile.experience.split('\n').slice(0, 5).join('\n')}...
+                             <div className="text-sm text-slate-700 whitespace-pre-line">
+                                {profile.experience.split('\n').slice(0, 10).join('\n')}...
                              </div>
                           </div>
                        </section>
 
                        <section>
-                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide">Skills Tailored</h2>
-                          <div className="flex flex-wrap gap-2">
+                          <h2 className="text-lg font-bold border-b border-slate-200 mb-2 uppercase tracking-wide text-slate-900">Skills Highlights</h2>
+                          <div className="flex flex-wrap gap-2 mt-2">
                              {profile.skills.split(',').map((s, i) => (
-                               <span key={i} className="bg-slate-100 px-2 py-1 rounded text-xs border border-slate-200 font-medium">{s.trim()}</span>
+                               <span key={i} className="bg-slate-100 px-3 py-1 rounded text-xs border border-slate-200 font-bold text-slate-700">{s.trim()}</span>
                              ))}
                           </div>
                        </section>
                        
                        <div className="mt-12 bg-indigo-50 p-4 rounded-lg border border-indigo-100 text-xs text-indigo-700 italic">
-                          This is a visual content preview. The actual LaTeX output in TeXworks will be perfectly typeset with professional margins and fonts.
+                          This is a content sanity check. TeXworks will render your professional template style perfectly.
                        </div>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Side Actions Pane */}
               <div className="w-full lg:w-72 flex flex-col gap-6">
-                 <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h4 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                       <i className="fas fa-file-export text-indigo-500"></i>
+                 <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+                    <h4 className="font-bold text-slate-100 mb-4 flex items-center gap-2">
+                       <i className="fas fa-file-export text-indigo-400"></i>
                        Export Files
                     </h4>
                     <div className="space-y-3">
-                       <button onClick={() => handleSaveFile(appData.latexCv!, `${appData.jobRole}_CV`, 'tex')} className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold text-sm hover:bg-black transition-all">
-                          Save CV (.tex)
+                       <button onClick={() => handleSaveFile(appData.latexCv!, `${appData.jobRole}_CV`, 'tex')} className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-indigo-500 shadow-lg shadow-indigo-900/40 transition-all flex items-center justify-center gap-2">
+                          <i className="fas fa-download"></i> Save CV (.tex)
                        </button>
-                       <button onClick={() => handleSaveFile(appData.coverLetter!, `${appData.jobRole}_CL`, 'txt')} className="w-full border border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-sm hover:bg-slate-50 transition-all">
-                          Save CL (.txt)
+                       <button onClick={() => handleSaveFile(appData.coverLetter!, `${appData.jobRole}_CL`, isClLatex ? 'tex' : 'txt')} className="w-full border border-slate-700 text-slate-300 py-3 rounded-xl font-bold text-sm hover:bg-slate-700 transition-all">
+                          Save CL ({isClLatex ? '.tex' : '.txt'})
                        </button>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-slate-100">
-                       <button onClick={() => handleCopy(appData.latexCv!, 'cv')} className="w-full text-indigo-600 text-xs font-bold hover:underline py-1">Copy LaTeX Source</button>
-                       <button onClick={() => handleCopy(appData.coverLetter!, 'cl')} className="w-full text-indigo-600 text-xs font-bold hover:underline py-1">Copy Cover Letter Text</button>
+                    <div className="mt-4 pt-4 border-t border-slate-700 flex flex-col gap-1">
+                       <button onClick={() => handleCopy(appData.latexCv!, 'cv')} className="text-indigo-400 text-xs font-bold hover:text-indigo-300 text-left py-1 flex items-center gap-2">
+                          <i className="fas fa-copy"></i> Copy LaTeX Source
+                       </button>
+                       <button onClick={() => handleCopy(appData.coverLetter!, 'cl')} className="text-indigo-400 text-xs font-bold hover:text-indigo-300 text-left py-1 flex items-center gap-2">
+                          <i className="fas fa-copy"></i> Copy Cover Letter
+                       </button>
                     </div>
                  </div>
 
                  <button 
                   onClick={handleFinalize}
-                  className="w-full bg-emerald-600 text-white font-bold py-6 rounded-3xl hover:bg-emerald-700 transition-all shadow-xl text-lg flex flex-col items-center justify-center gap-1 group"
+                  className="w-full bg-emerald-600 text-white font-bold py-6 rounded-3xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-900/40 text-lg flex flex-col items-center justify-center gap-1 group"
                 >
                   <span className="flex items-center gap-2">
                     <i className="fas fa-check-circle group-hover:scale-110 transition-transform"></i>
-                    Applied & Ready!
+                    Applied Successfully
                   </span>
-                  <span className="text-[10px] uppercase tracking-widest opacity-75">Saves to Dashboard</span>
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">Add to Dashboard</span>
                 </button>
                 
-                <button onClick={() => setStep('CL_GEN')} className="text-slate-400 font-bold text-sm hover:text-slate-600">
+                <button onClick={() => setStep('CL_GEN')} className="text-slate-500 font-bold text-sm hover:text-slate-300 transition-colors">
                    Wait, I need to edit something
                 </button>
               </div>
