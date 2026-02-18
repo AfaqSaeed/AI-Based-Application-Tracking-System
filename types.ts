@@ -1,0 +1,28 @@
+
+export interface UserProfile {
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin: string;
+  summary: string;
+  experience: string;
+  education: string;
+  skills: string;
+  baseCvSource: string; // New field for the user's reference LaTeX template
+}
+
+export interface JobApplication {
+  id: string;
+  companyName: string;
+  jobRole: string;
+  deadline: string;
+  jobDescription: string;
+  status: 'Draft' | 'Applied';
+  latexCv: string;
+  coverLetter: string;
+  appliedDate?: string;
+  jobUrl?: string;
+}
+
+export type ApplicationStep = 'JD_INPUT' | 'EXTRACTION' | 'CV_GEN' | 'CL_GEN' | 'REVIEW';

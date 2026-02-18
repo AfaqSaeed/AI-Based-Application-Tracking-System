@@ -1,0 +1,5 @@
+{
+  "name": "ApplyFlow - AI Job Application Manager",
+  "description": "A comprehensive job application management system that uses Gemini AI to extract job details, generate professional LaTeX CVs, and craft tailored cover letters.",
+  "requestFramePermissions": []
+}
